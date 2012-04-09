@@ -1,0 +1,7 @@
+101	ff_get_sshfs_dir	returning full path in sshfs repository failed: no argument given
+102	ff_get_penname	returning “penname” aka alias for directory failed: no argument given
+103	ff_set_watch	setting watch failed: no argument given
+104	ff_rem_watch	removal of watch failed: no argument given
+111	ff_encrypt	encription failed: no argument given
+112	ff_decrypt	decryption failed: no argument given
+

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# encrypts file content to standard output FIXME: it currently works for myself only
+
+# load default configuration
+source /etc/forkforge.conf
+
+if [ x"$1" != x ]; then
+  PWDTMP=`tr -cd '[:alnum:]' < /dev/urandom | fold -w$FF_STRENGTH | head -n1`
+  echo '✉am@mudasobwa.ru '`echo $PWDTMP | openssl rsautl -encrypt -inkey $PRIVATE_KEY | base64 -w0`
+	openssl aes-256-cbc -salt -k $PWDTMP -in $1
+#  PWDTMP=`dd if=/dev/random bs=1 count=$FF_STRENGTH`
+else
+  exit 111
+fi

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# shell script to set watches on directory
+# @param $1 — the directory to set watch on
+
+# load default configuration
+source /etc/forkforge.conf
+
+if [ x"$1" != x ]; then
+  _FF_S=`ff_get_sshfs_dir $1`
+  _FF_P=`ff_get_penname $1`
+
+  cat << EOF > "$_FF_P"⇑
+$1 IN_NO_LOOP,IN_CREATE,IN_MODIFY,IN_MOVED_TO ff_encrypt \$@/\$# $_FF_S
+$1 IN_DELETE,IN_MOVED_FROM ff_rm_remote $_FF_S/\$#
+$1 IN_DELETE_SELF,IN_MOVE_SELF rm -rf $_FF_S
+EOF
+  cat << EOF > "$_FF_P"⇓
+$_FF_S IN_NO_LOOP,IN_CREATE,IN_MODIFY,IN_MOVED_TO ff_decrypt \$@/\$# $1
+$_FF_S IN_DELETE,IN_MOVED_FROM ff_rm_local $1/\$#
+$_FF_S IN_DELETE_SELF,IN_MOVE_SELF rm -rf $1
+EOF
+else
+  exit 103
+fi

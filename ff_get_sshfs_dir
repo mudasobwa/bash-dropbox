@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# returns the penname (alias) for directory mirroring the directory given as argument
+
+# load default configuration
+source /etc/forkforge.conf
+
+# echoes name of incron script for given directory
+# e. g. /home/am/Work goes /var/forkforge/⌂⇒Work
+if [ x"$1" != x ]; then
+  echo "$FSMOUNT_DIR"`echo $1 | sed -e "s#$HOME_DIR#/⌂#"`
+else 
+  exit 101
+fi

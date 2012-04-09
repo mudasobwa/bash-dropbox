@@ -1,0 +1,40 @@
+== ForkForge — a new way to file your life ==
+The goal of a project is to provide a crypted secure dropbox-like transparent service for ‘cloud’ content storage
+
+== Architecture (As for Version 1, possibly being subject of change later) ==
+A server, as simple as possible. Stores content, provides ssh access for clients.
+[[Tech:Tiny Client|Tiny Client]], based on common *nix utilities:
+* ssh + sshfs
+* inotify + incron
+* if-up / if-down functions
+As of Version 1 we don't plan to support any OS with exception of Linux.
+
+The server simply stores the client content. ‘Content’ here means e. g. files, database entities (such as tables or even records), emails, jabber messages… whatever the user wants to have stored. It is responsible for backups of the content. Nothing more at the moment.
+The client uses the following scheme to sync ‘local’ content against the server:
+* initially there is an empty repository on the server, mounted within '''sshfs''' somewhere under the '''/var''' directory (e. g. '''/var/forkforge''' for now).
+* every entity on local computer may be marked as ‘persistent,’ which means it's being syncing against the remote server; once marked, it's automatically propagates to all other locals, connected to the server exactly as it's dancing around with DropBox.
+* as the entity is marked as persistent, the subdirectory in the form '''/var/forkforge$STRIPPED\_ENTITY\_URI''' is being created. The $STRIPPED\_ENTITY\_URI
+* the entities are being watched using so-called [[Tech:Filter Plugins|Filter Plugins]]. E. g. for files these are '''inotify'''-event listeners. When an entity is changed, the plugin is to ‘serialize’ the new value and store it within the '''/var/forkforge''' (for files that would be simple copying the chanegd file over the filesystem). 
+* the maintained '''sshfs''' entry is being watched as well, using '''incron'''. When smth there is changed, the ‘unserializer’ is called and the local data is being updated simultaneously.
+* '''при установке клиент сканирует каталоги на предмет нахождения файлов, которые имеет смысл синхронизировать (хистори жаббира, например), как это антивирусы всякие делают'''
+
+== Roadmap ==
+=== Version 1. ===
+* single user mode;
+* command-line client, including all necessary scripts;
+* file descriptors only.
+
+=== Version 2. ===
+* crypting.
+
+=== Version 3. ===
+* Windows version.
+
+=== Version 4. ===
+* Crypting on both linux/windows versions.
+
+=== Version 5. ===
+* Multi-user mode: sharing documents.
+
+== Useful Links ==
+[[Foreign:Useful Links|Useful Links]]

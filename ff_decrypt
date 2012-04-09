@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# decrypts file content to standard output
+
+# load default configuration
+source /etc/forkforge.conf
+
+if [ x"$1" != x ]; then
+  PWDTMP=`head -n 1 $1 | cut -d ' ' -f 2- | base64 -d | openssl rsautl -decrypt -inkey $PRIVATE_KEY`
+  echo -n `grep -a -v ^✉ $1` | openssl aes-256-cbc -d -k $PWDTMP
+else
+  exit 112
+fi
