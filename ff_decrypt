@@ -6,8 +6,9 @@
 source /etc/forkforge.conf
 
 if [ x"$1" != x ]; then
-  PWDTMP=`head -n 1 $1 | cut -d ' ' -f 2- | base64 -d | openssl rsautl -decrypt -inkey $PRIVATE_KEY`
-  echo -n `grep -a -v ^✉ $1` | openssl aes-256-cbc -d -k $PWDTMP
+  MD5SUM=`head -n 1 $1 | cut -d ' ' -f 2`
+  PWDTMP=`grep -a ^✉ $1 | cut -d ' ' -f 3- | base64 -d | openssl rsautl -decrypt -inkey $PRIVATE_KEY`
+  sed /^[✉Σ].*$/d $1 | openssl aes-256-cbc -d -k $PWDTMP
 else
   exit 112
 fi
