@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# load default configuration
+source /etc/forkforge.conf
+
+# log the message/error 
+ff_log() { 
+  if [ x"$LOG_LEVEL" == x"ALL" ]; then 
+    logger -f $LOG_FILE -s "[LOG] $1"; 
+  fi
+}
+ff_info() {
+  logger -f $LOG_FILE "[INFO] $1"
+}
+ff_err() {
+  logger -f $LOG_FILE "[ERR] $1"
+}
+
+# mount/unmount remote filesystem
+ff_mount() {
+  sshfs $REMOTE_USR@$REMOTE_HST:$REMOTE_DIR $SSHFS_DIR 2>/dev/null
+}
+ff_umount() {
+  fusermount -u $SSHFS_DIR
+}
+
+# init reconnections of remote
+ff_install() {
+  cat << EOF > $INITSSHFS_UP_DIR/$QUEUE-$FF_NAME
+sshfs $REMOTE_USR@$REMOTE_HST:$REMOTE_DIR $SSHFS_DIR 2>/dev/null
+EOF
+  cat << EOF > $INITSSHFS_DOWN_DIR/$QUEUE-$FF_NAME
+fusermount -u $SSHFS_DIR
+}
+EOF
+  mkdir -p $INITSSHFS_UP_DIR_SURROGATE && \
+    pushd $INITSSHFS_UP_DIR_SURROGATE && \
+    ln -s $INITSSHFS_UP_DIR/$QUEUE-$FF_NAME && \
+    popd
+}
+ff_uninstall() {
+  rm -rf $INITSSHFS_UP_DIR/$QUEUE-$FF_NAME
+  rm -rf $INITSSHFS_DOWN_DIR/$QUEUE-$FF_NAME
+  rm -rf $INITSSHFS_UP_DIR_SURROGATE/$QUEUE-$FF_NAME
+}
+
+# watching/forgetting folder
+# echoes TRUE if the directory is being watched, nothing otherwise
+ff_is_watched() {
+  for i in `ls $INCRON_DIR`; do
+    incron_file=`echo $i | sed -e 's#⇒#/#g' -e 's#[⇑⇓]##g'`
+    if [ `expr match $incron_file $1` -gt 0 ]; then
+      echo TRUE
+      break
+    fi
+  done
+}
+ff_unsanitize_dir() {
+  if [ x"$1" != x ]; then
+    echo $1 | sed -e 's#/⌂#$HOME_DIR#' -e 's#/var/$FF_NAME##g'
+  fi
+}
+# echoes path to incron script for given directory
+ff_incron_path() {
+  echo "$INCRON_DIR"/`ff_get_penname $1`
+}
