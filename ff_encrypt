@@ -6,9 +6,11 @@
 source /etc/forkforge.conf
 
 if [ x"$1" != x ]; then
-  echo "Σ" `md5sum $1 | cut -d ' ' -f 1`
+  MODTIME=`stat -c %Y $1`
+  MD5SUM=`md5sum $1 | cut -d ' ' -f 1`
   PWDTMP=`tr -cd '[:alnum:]' < /dev/urandom | fold -w$FF_STRENGTH | head -n1`
-  echo '✉ am@mudasobwa.ru '`echo $PWDTMP | openssl rsautl -encrypt -inkey $PRIVATE_KEY | base64 -w0`
+  PWDTMPENC=`echo $PWDTMP | openssl rsautl -encrypt -inkey $PRIVATE_KEY | base64 -w0`
+  echo "Σ$MODTIME ⧗$MD5SUM ✉am@mudasobwa.ru:$PWDTMPENC"
 	openssl aes-256-cbc -salt -k $PWDTMP -in $1
 #  PWDTMP=`dd if=/dev/random bs=1 count=$FF_STRENGTH`
 else

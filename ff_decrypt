@@ -6,9 +6,23 @@
 source /etc/forkforge.conf
 
 if [ x"$1" != x ]; then
-  MD5SUM=`head -n 1 $1 | cut -d ' ' -f 2`
-  PWDTMP=`grep -a ^✉ $1 | cut -d ' ' -f 3- | base64 -d | openssl rsautl -decrypt -inkey $PRIVATE_KEY`
-  sed /^[✉Σ].*$/d $1 | openssl aes-256-cbc -d -k $PWDTMP
+  FILETMP=$1
+  set -- junk `head -n 1 $1`
+  shift
+  for word; do
+    # echo "Σ$MODTIME ⧗$MD5SUM ✉am@mudasobwa.ru:$PWD"
+    # FIXME this will work with BASH4 ONLY because of assotiated arrays
+    unset PWDSTMP && declare -A PWDSTMP
+    case $word in
+      Σ*) MD5SUM=${word:1} ;;
+      ⧗*) MODTIME=${word:1} ;;
+      ✉*) PWDSTMP[`echo ${word:1} | cut -d ':' -f 1`]=`echo ${word:1} | cut -d ':' -f 2-` ;;
+      *) ;;
+    esac
+  done
+  # FIXME just test for hardcoded am@mudasobwa.ru private key
+  PWDTMP=`echo ${PWDSTMP['am@mudasobwa.ru']} | base64 -d | openssl rsautl -decrypt -inkey $PRIVATE_KEY`
+  tail -n +2 $FILETMP | openssl aes-256-cbc -d -k $PWDTMP
 else
   exit 112
 fi
