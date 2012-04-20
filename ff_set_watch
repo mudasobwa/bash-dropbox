@@ -7,6 +7,7 @@
 source /etc/forkforge.conf
 
 ICFILE=$INCRON_DIR/$FF_NAME⇑
+ICFILE_SSH=$INCRON_DIR/$FF_NAME⇓
 ICFILE=/tmp/olala
 # to add a string to 
 #ICFILE_CONTENT=( "${ICFILE_CONTENT[@]}" "new element" )
@@ -29,8 +30,14 @@ if [ -n $1 ]; then
 $FULLPATH IN_NO_LOOP,IN_CREATE,IN_MODIFY,IN_MOVED_TO \
           IN_DELETE,IN_MOVED_FROM \
           IN_DELETE_SELF,IN_MOVE_SELF \
-    ff_upload \$@ \$# \$% \
-    >> $ICFILE
+      ff_synch_up \$@ \$# \$% \
+      >> $ICFILE
+      echo \
+`ff_get_sshfs_dir $FULLPATH` IN_NO_LOOP,IN_CREATE,IN_MODIFY,IN_MOVED_TO \
+          IN_DELETE,IN_MOVED_FROM \
+          IN_DELETE_SELF,IN_MOVE_SELF \
+      ff_synch_dn \$@ \$# \$% \
+      >> $ICFILE
     fi
   else
     exit 110
