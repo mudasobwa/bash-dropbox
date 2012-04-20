@@ -1,14 +1,22 @@
 #!/bin/bash
 
-# shell script to set watches on directory
-# @param $1 — the directory to set watch on
+# shell script to remove watches on directory
+# @param $1 — the the file or directory to set watch on
 
 # load default configuration
 source /etc/forkforge.conf
 
-if [ x"$1" != x ]; then
-  _FF_P=`ff_get_penname $1`
-  rm -rf "$_FF_P"⇑ "$_FF_P"⇓
+ICFILE=$INCRON_DIR/$FF_NAME⇑
+ICFILE=/tmp/olala
+if [ -n $1 -a -f $ICFILE ]; then
+  declare -a ICFILE_CONTENT
+  IFS=$'\n' ICFILE_CONTENT=( $(< $ICFILE) )
+
+  declare -a ICFILE_RESULT=( ${ICFILE_CONTENT[@]##$1*} )
+  rm -rf $ICFILE
+  for i in ${ICFILE_RESULT[@]}; do
+    echo $i >> $ICFILE
+  done
 else
   exit 104
 fi
