@@ -5,23 +5,16 @@
 
 # load default configuration
 source /etc/forkforge.conf
-
-ICFILE=$INCRON_DIR/$FF_NAME⇑
-ICFILE=/tmp/olala
-if [ -n $1 -a -f $ICFILE ]; then
-  CURR=`readlink -e -s -n $1`
-  declare -a ICFILE_CONTENT
-  IFS=$'\n' ICFILE_CONTENT=( $(< $ICFILE) )
-
-  declare -a ICFILE_RESULT=( ${ICFILE_CONTENT[@]##$CURR*} )
-  if [ ${#ICFILE_CONTENT[@]} -ge ${#ICFILE_RESULT[@]} ] ; then
-    # we found matching line, let's drop it and corresponding remote file
-    rm -rf $ICFILE
-    for i in ${ICFILE_RESULT[@]}; do
-      echo $i >> $ICFILE
-    done
-    ff_synch_dn `ff_get_sshfs_dir $CURR` 'IN_DELETE'
-  fi
-else
-  exit 104
+# load user-specific config
+if [ -f $HOME_DIR/.forkforgerc ] ; then
+  source $HOME_DIR/.forkforgerc
 fi
+
+# get the full path (/home/am/blah/foo/bah/zee.zo)
+# FIXME removal of incron entry must be moved to ff_synch_up
+W_LOCAL=$(readlink -e -s -n $2)
+W_REMOTE=$(ff_get_sshfs_dir $W_LOCAL)
+ff_rem_incron_entry $INCRON_DIR/$FF_NAME⇑ $W_LOCAL && \
+  ff_rem_incron_entry $INCRON_DIR/$FF_NAME⇓ $W_REMOTE && \
+  ff_synch_dn $W_REMOTE 'IN_DELETE' || \
+exit 104

@@ -2,6 +2,8 @@
 
 # load default configuration
 source /etc/forkforge.conf
+# load user-specific config
+source $HOME_DIR/.forkforgerc
 
 # log the message/error 
 ff_log() { 
@@ -27,10 +29,10 @@ ff_umount() {
 # init reconnections of remote
 ff_install() {
   cat << EOF > $INITSSHFS_UP_DIR/$QUEUE-$FF_NAME
-sshfs $REMOTE_USR@$REMOTE_HST:$REMOTE_DIR $SSHFS_DIR 2>/dev/null
+sshfs $REMOTE_USR@$REMOTE_HST:$REMOTE_DIR $SSHFS_DIR 2>/dev/null && service incron start
 EOF
   cat << EOF > $INITSSHFS_DOWN_DIR/$QUEUE-$FF_NAME
-fusermount -u $SSHFS_DIR
+service incron stop && fusermount -u $SSHFS_DIR
 EOF
   mkdir -p $INITSSHFS_UP_DIR_SURROGATE && \
     pushd $INITSSHFS_UP_DIR_SURROGATE && \

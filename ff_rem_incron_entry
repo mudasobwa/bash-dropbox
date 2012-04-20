@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# shell script to remove watch from incron file given as argument
+# * actually all that stuff may be easyly done using
+# * sed -e '#$CURR#/d' and if [ $(wc -l $ICFILE) -gt $(wc -l $ICFILE_NEW) ]
+# * but this way is about 20% quicker
+
+# @param $1 — the incron file name 
+# @param $2 — the file or directory to remove incron watch from
+
+if [ x$1 == x -o x$2 == x ]; then
+  exit 104 # bad input
+fi
+
+ICFILE=$1
+# get the full path (/home/am/blah/foo/bah/zee.zo)
+CURR=$(readlink -e -s -n $2)
+if [ x$CURR == x ] ; then 
+  exit 106; # file given is not really a file
+fi
+# create an array of incron file entries
+declare -a ICFILE_CONTENT
+IFS=$'\n' ICFILE_CONTENT=( $(< $ICFILE) )
+
+# create an array filtered by $CURR
+# there is ONE hash in filter since we are to drop all
+#   those lines, matched $CURR* FIXME am I right here?
+declare -a ICFILE_RESULT=( ${ICFILE_CONTENT[@]##$CURR*} )
+if [ ${#ICFILE_CONTENT[@]} -gt ${#ICFILE_RESULT[@]} ] ; then
+  # we found matching line, let's drop
+  rm -rf $ICFILE
+  for i in ${ICFILE_RESULT[@]}; do
+    echo $i >> $ICFILE
+  done
+else 
+  exit 105 # no matches
+fi

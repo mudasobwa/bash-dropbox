@@ -4,12 +4,16 @@
 
 # load default configuration
 source /etc/forkforge.conf
+# load user-specific config
+if [ -f $HOME_DIR/.forkforgerc ] ; then
+  source $HOME_DIR/.forkforgerc
+fi
 
-if [ x"$1" != x ]; then
-  FILETMP=$1
-  set -- junk `head -n 1 $1`
+if [ x$1 != x ]; then
+  FILETMP=$1 # save for future use: set will damage it
+  set -- junk `head -n 1 $1` # split head line of crypted file
   shift
-  for word; do
+  for word; do # iterate through
     # echo "Σ$MODTIME ⧗$MD5SUM ✉am@mudasobwa.ru:$PWD"
     # FIXME this will work with BASH4 ONLY because of assotiated arrays
     unset PWDSTMP && declare -A PWDSTMP
@@ -20,7 +24,9 @@ if [ x"$1" != x ]; then
       *) ;;
     esac
   done
+  # retrieve _my_ password and uncrypt AES password with it
   PWDTMP=`echo ${PWDSTMP['$PRIVATE_ID']} | base64 -d | openssl rsautl -decrypt -inkey $PRIVATE_KEY`
+  # encrypt the crypted file content with AES password got previously
   tail -n +2 $FILETMP | openssl aes-256-cbc -d -k $PWDTMP
 else
   exit 112

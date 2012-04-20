@@ -4,14 +4,26 @@
 
 # load default configuration
 source /etc/forkforge.conf
+# load user-specific config
+if [ -f $HOME_DIR/.forkforgerc ] ; then
+  source $HOME_DIR/.forkforgerc
+fi
 
-if [ x"$1" != x ]; then
+if [ x$1 != x ]; then
   MODTIME=`stat -c %Y $1`
   MD5SUM=`md5sum $1 | cut -d ' ' -f 1`
+  # create unique password to use for AES encryption
   PWDTMP=`tr -cd '[:alnum:]' < /dev/urandom | fold -w$FF_STRENGTH | head -n1`
+  # encrypt the previously created password 
+  # FIXME this will work for _me_ only, must change to
+  # crypting with public keys of all the recipients
+  # see http://forums.gentoo.org/viewtopic-p-6041298.html?sid=834fbf7ee83c52a1f8bb8cbf4aac0a0d
+  # openssl rsautl -encrypt -pubin -inkey ~/.ssh/id_rsa.pub.pem
   PWDTMPENC=`echo $PWDTMP | openssl rsautl -encrypt -inkey $PRIVATE_KEY | base64 -w0`
+  # write the “sysinfo line”: mod time, md5 hash, encrypted passwords
   echo "Σ$MODTIME ⧗$MD5SUM ✉$PRIVATE_ID:$PWDTMPENC"
-	openssl aes-256-cbc -salt -k $PWDTMP -in $1
+  # encrypt content using temporary unique password 
+  openssl aes-256-cbc -salt -k $PWDTMP -in $1
 #  PWDTMP=`dd if=/dev/random bs=1 count=$FF_STRENGTH`
 else
   exit 111
