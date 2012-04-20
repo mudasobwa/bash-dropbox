@@ -9,14 +9,19 @@ source /etc/forkforge.conf
 ICFILE=$INCRON_DIR/$FF_NAME⇑
 ICFILE=/tmp/olala
 if [ -n $1 -a -f $ICFILE ]; then
+  CURR=`readlink -e -s -n $1`
   declare -a ICFILE_CONTENT
   IFS=$'\n' ICFILE_CONTENT=( $(< $ICFILE) )
 
-  declare -a ICFILE_RESULT=( ${ICFILE_CONTENT[@]##$1*} )
-  rm -rf $ICFILE
-  for i in ${ICFILE_RESULT[@]}; do
-    echo $i >> $ICFILE
-  done
+  declare -a ICFILE_RESULT=( ${ICFILE_CONTENT[@]##$CURR*} )
+  if [ ${#ICFILE_CONTENT[@]} -ge ${#ICFILE_RESULT[@]} ] ; then
+    # we found matching line, let's drop it and corresponding remote file
+    rm -rf $ICFILE
+    for i in ${ICFILE_RESULT[@]}; do
+      echo $i >> $ICFILE
+    done
+    rm -rf `ff_get_sshfs_dir $CURR`
+  fi
 else
   exit 104
 fi

@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# returns the sshfs directory mirroring the directory given as argument
+# returns the local directory mirroring the sshfs directory given as argument
 
 # load default configuration
 source /etc/forkforge.conf
 
 # produces platform-independent name for directory
-# e. g. /home/am/Work goes ⌂/Work
+# e. g. /var/forkforge/⌂/Work goes /home/am/Work
 if [ x"$1" != x ]; then
-  echo $1 | sed -e "s#$HOME_DIR#/⌂#" -e 's#/#⇒#g'
+  echo $1 | sed -e "s#$FSMOUNT_DIR##" -e "s#/⌂#$HOME_DIR#"
 else 
   exit 102
 fi
