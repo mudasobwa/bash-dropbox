@@ -25,18 +25,20 @@ if [ -n $1 ]; then
       while [ x$CURR != x$ROOT_DIR ] ; do
         grep -e "^$CURR " $ICFILE 2>&1 > /dev/null && exit 112
         CURR=`readlink -e -s -n $CURR/..`
-      done     
+      done
+      # copy file to sshfs and set watch for it for future use
+      ff_synch_up $FULLPATH 'IN_CREATE'
       echo \
 $FULLPATH IN_NO_LOOP,IN_CREATE,IN_MODIFY,IN_MOVED_TO \
           IN_DELETE,IN_MOVED_FROM \
           IN_DELETE_SELF,IN_MOVE_SELF \
-      ff_synch_up \$@ \$# \$% \
+      ff_synch_up \$@\$# \$% \
       >> $ICFILE
       echo \
 `ff_get_sshfs_dir $FULLPATH` IN_NO_LOOP,IN_CREATE,IN_MODIFY,IN_MOVED_TO \
           IN_DELETE,IN_MOVED_FROM \
           IN_DELETE_SELF,IN_MOVE_SELF \
-      ff_synch_dn \$@ \$# \$% \
+      ff_synch_dn \$@\$# \$% \
       >> $ICFILE
     fi
   else

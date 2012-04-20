@@ -20,7 +20,7 @@ if [ -n $1 -a -f $ICFILE ]; then
     for i in ${ICFILE_RESULT[@]}; do
       echo $i >> $ICFILE
     done
-    rm -rf `ff_get_sshfs_dir $CURR`
+    ff_synch_dn `ff_get_sshfs_dir $CURR` 'IN_DELETE'
   fi
 else
   exit 104
