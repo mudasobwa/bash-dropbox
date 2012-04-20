@@ -14,7 +14,5 @@ fi
 W_LOCAL=$(readlink -e -s -n $1)
 W_REMOTE=$(ff_get_sshfs_dir $W_LOCAL)
 # copy file to sshfs and set watch for it for future use
-# FIXME adding of incron entry must be moved to ff_synch_up
-ff_add_incron_entry $W_LOCAL && \
-  ff_synch_up $W_REMOTE 'IN_CREATE' || \
-exit 103
+ff_synch_up $W_REMOTE 'IN_CREATE'
+ff_add_incron_entry $W_LOCAL

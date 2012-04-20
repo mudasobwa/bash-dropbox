@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# shell script to upload watched items
+# @param $1 — the file to be uploaded (fully qualified)
+# @param $2 — an action to be done on file
+
+# load default configuration
+source /etc/forkforge.conf
+# load user-specific config
+if [ -f $HOME_DIR/.forkforgerc ] ; then
+  source $HOME_DIR/.forkforgerc
+fi
+
+# get the full path (/home/am/blah/foo/bah/zee.zo)
+W_REMOTE=$(readlink -e -s -n $1)
+if [ x$2 == x -o x$W_REMOTE == x ] ; then 
+  # shit happens
+  exit 202
+fi
+
+W_LOCAL=$(ff_get_local_dir $W_REMOTE)
+
+case $2 in
+  'IN_CREATE'|'IN_MOVED_TO')
+    mkdir -p $(dirname $W_LOCAL) && cp -rf $W_REMOTE $W_LOCAL
+  ;; 
+  'IN_MODIFY')
+    # FIXME PREVENT LOOP HERE !!!
+    mkdir -p $(dirname $W_LOCAL) && cp -rf $W_REMOTE $W_LOCAL
+  ;;
+  'IN_DELETE'|'IN_MOVED_FROM')
+    # FIXME PREVENT LOOP HERE !!!
+    rm -rf $W_LOCAL
+  ;;
+  'IN_DELETE_SELF'|'IN_MOVE_SELF')
+    ff_rem_incron_entry $INCRON_DIR/$FF_NAME⇑ $W_LOCAL
+    ff_rem_incron_entry $INCRON_DIR/$FF_NAME⇓ $W_REMOTE
+    rm -rf $W_LOCAL
+  ;;
+  *)
+    exit 104
+  ;;
+esac

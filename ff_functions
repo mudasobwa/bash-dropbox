@@ -25,13 +25,20 @@ ff_mount() {
 ff_umount() {
   fusermount -u $SSHFS_DIR
 }
+ff_is_mounted() {
+  mount | grep $REMOTE_DIR
+}
 
 # init reconnections of remote
 ff_install() {
   cat << EOF > $INITSSHFS_UP_DIR/$QUEUE-$FF_NAME
-sshfs $REMOTE_USR@$REMOTE_HST:$REMOTE_DIR $SSHFS_DIR 2>/dev/null && service incron start
+[ "$IFACE" != "lo" ] || exit 0
+sshfs $REMOTE_USR@$REMOTE_HST:$REMOTE_DIR $SSHFS_DIR 2>/dev/null && \
+ff_total_sync && \
+service incron start
 EOF
   cat << EOF > $INITSSHFS_DOWN_DIR/$QUEUE-$FF_NAME
+[ "$IFACE" != "lo" ] || exit 0
 service incron stop && fusermount -u $SSHFS_DIR
 EOF
   mkdir -p $INITSSHFS_UP_DIR_SURROGATE && \
