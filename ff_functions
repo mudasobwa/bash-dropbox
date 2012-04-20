@@ -31,7 +31,6 @@ sshfs $REMOTE_USR@$REMOTE_HST:$REMOTE_DIR $SSHFS_DIR 2>/dev/null
 EOF
   cat << EOF > $INITSSHFS_DOWN_DIR/$QUEUE-$FF_NAME
 fusermount -u $SSHFS_DIR
-}
 EOF
   mkdir -p $INITSSHFS_UP_DIR_SURROGATE && \
     pushd $INITSSHFS_UP_DIR_SURROGATE && \
@@ -42,25 +41,4 @@ ff_uninstall() {
   rm -rf $INITSSHFS_UP_DIR/$QUEUE-$FF_NAME
   rm -rf $INITSSHFS_DOWN_DIR/$QUEUE-$FF_NAME
   rm -rf $INITSSHFS_UP_DIR_SURROGATE/$QUEUE-$FF_NAME
-}
-
-# watching/forgetting folder
-# echoes TRUE if the directory is being watched, nothing otherwise
-ff_is_watched() {
-  for i in `ls $INCRON_DIR`; do
-    incron_file=`echo $i | sed -e 's#⇒#/#g' -e 's#[⇑⇓]##g'`
-    if [ `expr match $incron_file $1` -gt 0 ]; then
-      echo TRUE
-      break
-    fi
-  done
-}
-ff_unsanitize_dir() {
-  if [ x"$1" != x ]; then
-    echo $1 | sed -e 's#/⌂#$HOME_DIR#' -e 's#/var/$FF_NAME##g'
-  fi
-}
-# echoes path to incron script for given directory
-ff_incron_path() {
-  echo "$INCRON_DIR"/`ff_get_penname $1`
 }
