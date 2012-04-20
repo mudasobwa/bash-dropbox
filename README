@@ -1,9 +1,8 @@
-== ForkForge — a new way to file your life ==
 The goal of a project is to provide a crypted secure dropbox-like transparent service for ‘cloud’ content storage
 
-== Architecture (As for Version 1, possibly being subject of change later) ==
+Architecture (As for Version 1, possibly being subject of change later)
 A server, as simple as possible. Stores content, provides ssh access for clients.
-[[Tech:Tiny Client|Tiny Client]], based on common *nix utilities:
+Tiny Client, based on common *nix utilities:
 * ssh + sshfs
 * inotify + incron
 * if-up / if-down functions
@@ -18,23 +17,3 @@ The client uses the following scheme to sync ‘local’ content against the ser
 * the maintained '''sshfs''' entry is being watched as well, using '''incron'''. When smth there is changed, the ‘unserializer’ is called and the local data is being updated simultaneously.
 * '''при установке клиент сканирует каталоги на предмет нахождения файлов, которые имеет смысл синхронизировать (хистори жаббира, например), как это антивирусы всякие делают'''
 
-== Roadmap ==
-=== Version 1. ===
-* single user mode;
-* command-line client, including all necessary scripts;
-* file descriptors only.
-
-=== Version 2. ===
-* crypting.
-
-=== Version 3. ===
-* Windows version.
-
-=== Version 4. ===
-* Crypting on both linux/windows versions.
-
-=== Version 5. ===
-* Multi-user mode: sharing documents.
-
-== Useful Links ==
-[[Foreign:Useful Links|Useful Links]]
