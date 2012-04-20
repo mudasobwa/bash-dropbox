@@ -10,7 +10,7 @@ if [ x"$1" != x ]; then
   MD5SUM=`md5sum $1 | cut -d ' ' -f 1`
   PWDTMP=`tr -cd '[:alnum:]' < /dev/urandom | fold -w$FF_STRENGTH | head -n1`
   PWDTMPENC=`echo $PWDTMP | openssl rsautl -encrypt -inkey $PRIVATE_KEY | base64 -w0`
-  echo "Σ$MODTIME ⧗$MD5SUM ✉am@mudasobwa.ru:$PWDTMPENC"
+  echo "Σ$MODTIME ⧗$MD5SUM ✉$PRIVATE_ID:$PWDTMPENC"
 	openssl aes-256-cbc -salt -k $PWDTMP -in $1
 #  PWDTMP=`dd if=/dev/random bs=1 count=$FF_STRENGTH`
 else

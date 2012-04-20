@@ -20,8 +20,7 @@ if [ x"$1" != x ]; then
       *) ;;
     esac
   done
-  # FIXME just test for hardcoded am@mudasobwa.ru private key
-  PWDTMP=`echo ${PWDSTMP['am@mudasobwa.ru']} | base64 -d | openssl rsautl -decrypt -inkey $PRIVATE_KEY`
+  PWDTMP=`echo ${PWDSTMP['$PRIVATE_ID']} | base64 -d | openssl rsautl -decrypt -inkey $PRIVATE_KEY`
   tail -n +2 $FILETMP | openssl aes-256-cbc -d -k $PWDTMP
 else
   exit 112

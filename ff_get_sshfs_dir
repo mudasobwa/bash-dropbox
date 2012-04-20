@@ -8,7 +8,7 @@ source /etc/forkforge.conf
 # echoes name of incron script for given directory
 # e. g. /home/am/Work goes /var/forkforge/⌂⇒Work
 if [ x"$1" != x ]; then
-  echo "$FSMOUNT_DIR"`readlink -e -s -n $1 | sed -e "s#$HOME_DIR#/⌂#"`
+  echo "$SSHFS_DIR"`readlink -e -s -n $1 | sed -e "s#$HOME_DIR#/⌂#"`
 else 
   exit 101
 fi
