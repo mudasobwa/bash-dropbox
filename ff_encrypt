@@ -17,9 +17,7 @@ if [ x$1 != x ]; then
   # encrypt the previously created password 
   # FIXME this will work for _me_ only, must change to
   # crypting with public keys of all the recipients
-  # see http://forums.gentoo.org/viewtopic-p-6041298.html?sid=834fbf7ee83c52a1f8bb8cbf4aac0a0d
-  # openssl rsautl -encrypt -pubin -inkey ~/.ssh/id_rsa.pub.pem
-  PWDTMPENC=`echo $PWDTMP | openssl rsautl -encrypt -inkey $PRIVATE_KEY | base64 -w0`
+  PWDTMPENC=`echo $PWDTMP | openssl rsautl -encrypt -pubin -inkey $PUBLIC_KEY | base64 -w0`
   # write the “sysinfo line”: mod time, md5 hash, encrypted passwords
   echo "Σ$MODTIME ⧗$MD5SUM ✉$PRIVATE_ID:$PWDTMPENC"
   # encrypt content using temporary unique password 

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# shell helper to ckeck if we did not break encryption/decription
+# @param $1 — the the file to check on
+
+# load default configuration
+source /etc/forkforge.conf
+# load user-specific config
+if [ -f $HOME_DIR/.forkforgerc ] ; then
+  source $HOME_DIR/.forkforgerc
+fi
+
+./ff_encrypt $1 > $1.enc && \
+./ff_decrypt $1.enc > $1.dec && \
+diff $1 $1.dec && \
+echo 'Test passed :-)' && rm -rf $1.enc $1.dec || echo 'Test failed :-('
