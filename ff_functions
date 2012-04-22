@@ -19,35 +19,35 @@ ff_err() {
 }
 
 # mount/unmount remote filesystem
-ff_mount() {
-  sshfs $REMOTE_USR@$REMOTE_HST:$REMOTE_DIR $SSHFS_DIR 2>/dev/null
+ff_ssh_mount() {
+  sshfs $REMOTE_HOST_USER@$REMOTE_HOST:$REMOTE_HOST_DIR $REMOTE_DIR 2>/dev/null
 }
-ff_umount() {
-  fusermount -u $SSHFS_DIR
+ff_ssh_umount() {
+  fusermount -u $REMOTE_DIR
 }
 ff_is_mounted() {
-  mount | grep $REMOTE_DIR
+  mount | grep $REMOTE_HOST_DIR
 }
 
 # init reconnections of remote
 ff_install() {
-  cat << EOF > $INITSSHFS_UP_DIR/$QUEUE-$FF_NAME
+  cat << EOF > $IFACE_UP_DIR/$QUEUE-$FF_NAME
 [ "$IFACE" != "lo" ] || exit 0
-sshfs $REMOTE_USR@$REMOTE_HST:$REMOTE_DIR $SSHFS_DIR 2>/dev/null && \
+sshfs $REMOTE_HOST_USER@$REMOTE_HOST:$REMOTE_HOST_DIR $REMOTE_DIR 2>/dev/null && \
 ff_total_sync && \
 service incron start
 EOF
-  cat << EOF > $INITSSHFS_DOWN_DIR/$QUEUE-$FF_NAME
+  cat << EOF > $IFACE_DOWN_DIR/$QUEUE-$FF_NAME
 [ "$IFACE" != "lo" ] || exit 0
-service incron stop && fusermount -u $SSHFS_DIR
+service incron stop && fusermount -u $REMOTE_DIR
 EOF
-  mkdir -p $INITSSHFS_UP_DIR_SURROGATE && \
-    pushd $INITSSHFS_UP_DIR_SURROGATE && \
-    ln -s $INITSSHFS_UP_DIR/$QUEUE-$FF_NAME && \
+  mkdir -p $IFACE_UP_DIR_SURROGATE && \
+    pushd $IFACE_UP_DIR_SURROGATE && \
+    ln -s $IFACE_UP_DIR/$QUEUE-$FF_NAME && \
     popd
 }
 ff_uninstall() {
-  rm -rf $INITSSHFS_UP_DIR/$QUEUE-$FF_NAME
-  rm -rf $INITSSHFS_DOWN_DIR/$QUEUE-$FF_NAME
-  rm -rf $INITSSHFS_UP_DIR_SURROGATE/$QUEUE-$FF_NAME
+  rm -rf $IFACE_UP_DIR/$QUEUE-$FF_NAME
+  rm -rf $IFACE_DOWN_DIR/$QUEUE-$FF_NAME
+  rm -rf $IFACE_UP_DIR_SURROGATE/$QUEUE-$FF_NAME
 }

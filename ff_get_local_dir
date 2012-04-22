@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# returns the local directory mirroring the sshfs directory given as argument
+# returns the local directory mirroring the remote directory given as argument
 
 # load default configuration
 source /etc/forkforge.conf
@@ -12,7 +12,7 @@ fi
 # produces platform-independent name for directory
 # e. g. /var/forkforge/⌂/Work goes /home/am/Work
 if [ x$1 != x ]; then
-  echo $1 | sed -e "s#$SSHFS_DIR##" -e "s#/⌂#$HOME_DIR#"
+  echo $1 | sed -e "s#$REMOTE_DIR##" -e "s#/⌂#$HOME_DIR#"
 else 
   exit 102
 fi

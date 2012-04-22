@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# returns the sshfs dir (remote) for directory mirroring the directory given as argument
+# returns the remote dir (remote) for directory mirroring the directory given as argument
 
 # load default configuration
 source /etc/forkforge.conf
@@ -12,7 +12,7 @@ fi
 # echoes name of incron script for given directory
 # e. g. /home/am/Work goes /var/forkforge/⌂⇒Work
 if [ x$1 != x ]; then
-  echo "$SSHFS_DIR"`readlink -e -s -n $1 | sed -e "s#$HOME_DIR#/⌂#"`
+  echo "$REMOTE_DIR"`readlink -e -s -n $1 | sed -e "s#$HOME_DIR#/⌂#"`
 else 
   exit 101
 fi

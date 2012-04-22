@@ -21,7 +21,7 @@ if [ x$2 == x -o x$W_LOCAL == x ] ; then
   exit 201
 fi
 
-W_REMOTE=$(ff_get_sshfs_dir $W_LOCAL)
+W_REMOTE=$(ff_get_remote_dir $W_LOCAL)
 
 case $2 in
   'IN_CREATE'|'IN_MOVED_TO')
