@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# shell script to compare local file against it's ssh'ed version
+# @param $1 — the the file to compare
+
+# load default configuration
+source /etc/forkforge.conf
+# load user-specific config
+if [ -f $HOME_DIR/.forkforgerc ] ; then
+  source $HOME_DIR/.forkforgerc
+fi
+
+# get the full path (/home/am/blah/foo/bah/zee.zo)
+# FIXME removal of incron entry must be moved to ff_synch_up
+W_LOCAL=$(readlink -e -s -n $1)
+#W_REMOTE=$(ff_get_sshfs_dir $W_LOCAL)
+W_REMOTE=$W_LOCAL.enc
+
+# FIXME This must be a routine, since it's used not only here
+MODTIME_LOCAL=$(stat -c %Y $W_LOCAL)
+MD5SUM_LOCAL=$(md5sum $W_LOCAL | cut -d ' ' -f 1)
+
+set -- junk `head -n 1 $W_REMOTE`
+shift
+for word; do # iterate through
+  case $word in
+    Σ*) MD5SUM_REMOTE=${word:1} ;;
+    ⧗*) MODTIME_REMOTE=${word:1} ;;
+    *) ;;
+  esac
+done
+
+MODTIME_DIFF=$(($MODTIME_LOCAL - $MODTIME_REMOTE))
+
+if [ $MD5SUM_LOCAL == $MD5SUM_REMOTE ] ; then
+  echo EQUAL MD5 ⇒ SAME FILES
+elif [ $MODTIME_DIFF -gt 0 ] ; then
+  echo LOCAL MOD TIME IS GREATER ⇒ LOCAL
+else
+  echo LOCAL MOD TIME IS SMALLER ⇒ REMOTE
+fi
