@@ -3,34 +3,36 @@
 # load default configuration
 source /etc/forkforge.conf
 # load user-specific config
-source $HOME_DIR/.forkforgerc
+if [ -f $HOME_DIR/.forkforgerc ] ; then
+  source $HOME_DIR/.forkforgerc
+fi
 
 # log the message/error 
-ff_log() { 
+function ff_log { 
   if [ x"$LOG_LEVEL" == x"ALL" ]; then 
-    logger -f $LOG_FILE -s "[LOG] $1"; 
+    logger -f $LOG_FILE -s "[$FF_NAME] [LOG] $1"; 
   fi
 }
-ff_info() {
-  logger -f $LOG_FILE "[INFO] $1"
+function ff_info {
+  logger -f $LOG_FILE "[$FF_NAME] [INF] $1"
 }
-ff_err() {
-  logger -f $LOG_FILE "[ERR] $1"
+function ff_err {
+  logger -f $LOG_FILE "[$FF_NAME] [ERR] $1"
 }
 
 # mount/unmount remote filesystem
-ff_ssh_mount() {
+function ff_ssh_mount {
   sshfs $REMOTE_HOST_USER@$REMOTE_HOST:$REMOTE_HOST_DIR $REMOTE_DIR 2>/dev/null
 }
-ff_ssh_umount() {
+function ff_ssh_umount {
   fusermount -u $REMOTE_DIR
 }
-ff_is_mounted() {
+function ff_is_mounted {
   mount | grep $REMOTE_HOST_DIR
 }
 
 # init reconnections of remote
-ff_install() {
+function ff_install {
   cat << EOF > $IFACE_UP_DIR/$QUEUE-$FF_NAME
 [ "$IFACE" != "lo" ] || exit 0
 sshfs $REMOTE_HOST_USER@$REMOTE_HOST:$REMOTE_HOST_DIR $REMOTE_DIR 2>/dev/null && \
@@ -46,7 +48,7 @@ EOF
     ln -s $IFACE_UP_DIR/$QUEUE-$FF_NAME && \
     popd
 }
-ff_uninstall() {
+function ff_uninstall {
   rm -rf $IFACE_UP_DIR/$QUEUE-$FF_NAME
   rm -rf $IFACE_DOWN_DIR/$QUEUE-$FF_NAME
   rm -rf $IFACE_UP_DIR_SURROGATE/$QUEUE-$FF_NAME

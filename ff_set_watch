@@ -14,5 +14,5 @@ fi
 W_LOCAL=$(readlink -e -s -n $1)
 W_REMOTE=$(ff_get_remote_dir $W_LOCAL)
 # copy file to remote and set watch for it for future use
-ff_synch_up $W_REMOTE 'IN_CREATE'
+ff_synch_up $W_LOCAL IN_CREATE
 ff_add_incron_entry $W_LOCAL

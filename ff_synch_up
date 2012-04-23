@@ -6,42 +6,47 @@
 
 # load default configuration
 source /etc/forkforge.conf
+source /usr/bin/ff_functions
 # load user-specific config
 if [ -f $HOME_DIR/.forkforgerc ] ; then
   source $HOME_DIR/.forkforgerc
 fi
 
-IS_ONLINE=$(mount | grep $REMOTE_DIR)
-IS_OL=$?
+#IS_ONLINE=$(mount | grep $REMOTE_DIR)
+#IS_OL=$?
+IS_OL=0
 
 # get the full path (/home/am/blah/foo/bah/zee.zo)
 W_LOCAL=$(readlink -e -s -n $1)
-if [ x$2 == x -o x$W_LOCAL == x ] ; then 
+shift
+if [ x$1 == x -o x$W_LOCAL == x ] ; then 
   # shit happens
   exit 201
 fi
 
 W_REMOTE=$(ff_get_remote_dir $W_LOCAL)
 
-case $2 in
-  'IN_CREATE'|'IN_MOVED_TO')
+case $1 in
+  IN_CREATE|IN_MOVED_TO)
     if [ $IS_OL -eq 0 ] ; then
-      mkdir -p $(dirname $W_REMOTE) && cp -rf $W_LOCAL $W_REMOTE 
+      mkdir -p $(dirname $W_REMOTE)
+      cp -rf $W_LOCAL $W_REMOTE 
     fi
   ;; 
-  'IN_MODIFY')
+  IN_MODIFY)
     # FIXME PREVENT LOOP HERE !!!
     if [ $IS_OL -eq 0 ] ; then
-      mkdir -p $(dirname $W_REMOTE) && cp -rf $W_LOCAL $W_REMOTE 
+      mkdir -p $(dirname $W_REMOTE)
+      cp -rf $W_LOCAL $W_REMOTE 
     fi
   ;;
-  'IN_DELETE'|'IN_MOVED_FROM')
+  IN_DELETE|IN_MOVED_FROM)
     # FIXME PREVENT LOOP HERE !!!
     if [ $IS_OL -eq 0 ] ; then
       rm -rf $W_REMOTE
     fi
   ;;
-  'IN_DELETE_SELF'|'IN_MOVE_SELF')
+  IN_DELETE_SELF|IN_MOVE_SELF)
     ff_rem_incron_entry $INCRON_DIR/$FF_NAME⇑ $W_LOCAL
     ff_rem_incron_entry $INCRON_DIR/$FF_NAME⇓ $W_REMOTE
     if [ $IS_OL -eq 0 ] ; then

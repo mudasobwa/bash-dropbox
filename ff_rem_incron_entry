@@ -8,13 +8,14 @@
 # @param $1 — the incron file name 
 # @param $2 — the file or directory to remove incron watch from
 
-if [ x$1 == x -o x$2 == x ]; then
+if [ x$1 == x ]; then
   exit 104 # bad input
 fi
 
 ICFILE=$1
+shift
 # get the full path (/home/am/blah/foo/bah/zee.zo)
-CURR=$(readlink -e -s -n $2)
+CURR=$(readlink -e -s -n $1)
 if [ x$CURR == x ] ; then 
   exit 106; # file given is not really a file
 fi
