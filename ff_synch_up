@@ -30,14 +30,18 @@ case $1 in
   IN_CREATE|IN_MOVED_TO)
     if [ $IS_OL -eq 0 ] ; then
       mkdir -p $(dirname $W_REMOTE)
-      cp -rf $W_LOCAL $W_REMOTE 
+      if ! ff_compare $W_LOCAL ; then
+        ff_encrypt $W_LOCAL > $W_REMOTE 
+      fi
     fi
   ;; 
   IN_MODIFY)
     # FIXME PREVENT LOOP HERE !!!
     if [ $IS_OL -eq 0 ] ; then
       mkdir -p $(dirname $W_REMOTE)
-      cp -rf $W_LOCAL $W_REMOTE 
+      if ! ff_compare $W_LOCAL ; then
+        ff_encrypt $W_LOCAL > $W_REMOTE 
+      fi
     fi
   ;;
   IN_DELETE|IN_MOVED_FROM)

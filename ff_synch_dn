@@ -24,12 +24,12 @@ W_LOCAL=$(ff_get_local_dir $W_REMOTE)
 case $1 in
   'IN_CREATE'|'IN_MOVED_TO')
     mkdir -p $(dirname $W_LOCAL)
-    cp -rf $W_REMOTE $W_LOCAL
+    ff_decrypt $W_REMOTE > $W_LOCAL
   ;; 
   'IN_MODIFY')
     # FIXME PREVENT LOOP HERE !!!
     mkdir -p $(dirname $W_LOCAL)
-    cp -rf $W_REMOTE $W_LOCAL
+    ff_decrypt $W_REMOTE > $W_LOCAL
   ;;
   'IN_DELETE'|'IN_MOVED_FROM')
     # FIXME PREVENT LOOP HERE !!!
