@@ -23,20 +23,28 @@ W_LOCAL=$(ff_get_local_dir $W_REMOTE)
 
 case $1 in
   IN_CREATE|IN_MOVED_TO)
-    mkdir -p $(dirname $W_LOCAL)
-    if ! ff_compare $W_LOCAL ; then
-      ff_rem_incron_entry $W_LOCAL
-      ff_decrypt $W_REMOTE > $W_LOCAL
-      ff_add_incron_entry $W_LOCAL
+    if [ -f $W_REMOTE ] ; then
+      mkdir -p $(dirname $W_LOCAL)
+      if ! ff_compare $W_LOCAL ; then
+        ff_rem_incron_entry $W_LOCAL
+        ff_decrypt $W_REMOTE > $W_LOCAL
+        ff_add_incron_entry $W_LOCAL
+      fi
+    else
+      mkdir -p $W_LOCAL
     fi
   ;; 
   IN_MODIFY)
     # FIXME PREVENT LOOP HERE !!!
-    mkdir -p $(dirname $W_LOCAL)
     if ! ff_compare $W_LOCAL ; then
-      ff_rem_incron_entry $W_LOCAL
-      ff_decrypt $W_REMOTE > $W_LOCAL
-      ff_add_incron_entry $W_LOCAL
+      mkdir -p $(dirname $W_LOCAL)
+      if [ -f $W_REMOTE ] ; then
+        ff_rem_incron_entry $W_LOCAL
+        ff_decrypt $W_REMOTE > $W_LOCAL
+        ff_add_incron_entry $W_LOCAL
+      fi
+    else
+      mkdir -p $W_LOCAL
     fi
   ;;
   IN_DELETE|IN_MOVED_FROM)
