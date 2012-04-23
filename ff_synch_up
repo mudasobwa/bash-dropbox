@@ -31,7 +31,9 @@ case $1 in
     if [ $IS_OL -eq 0 ] ; then
       mkdir -p $(dirname $W_REMOTE)
       if ! ff_compare $W_LOCAL ; then
+        ff_rem_incron_entry $W_LOCAL
         ff_encrypt $W_LOCAL > $W_REMOTE 
+        ff_add_incron_entry $W_LOCAL
       fi
     fi
   ;; 
@@ -40,7 +42,9 @@ case $1 in
     if [ $IS_OL -eq 0 ] ; then
       mkdir -p $(dirname $W_REMOTE)
       if ! ff_compare $W_LOCAL ; then
+        ff_rem_incron_entry $W_LOCAL
         ff_encrypt $W_LOCAL > $W_REMOTE 
+        ff_add_incron_entry $W_LOCAL
       fi
     fi
   ;;
@@ -51,8 +55,7 @@ case $1 in
     fi
   ;;
   IN_DELETE_SELF|IN_MOVE_SELF)
-    ff_rem_incron_entry $INCRON_DIR/$FF_NAME⇑ $W_LOCAL
-    ff_rem_incron_entry $INCRON_DIR/$FF_NAME⇓ $W_REMOTE
+    ff_rem_incron_entry $W_LOCAL
     if [ $IS_OL -eq 0 ] ; then
       rm -rf $W_REMOTE
     fi
