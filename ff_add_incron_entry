@@ -33,15 +33,11 @@ if [ x$1 != x ]; then
         CURR=$(readlink -e -s -n $CURR/..)
       done
       echo \
-$FULLPATH IN_NO_LOOP,IN_CREATE,IN_MODIFY,IN_MOVED_TO \
-          IN_DELETE,IN_MOVED_FROM \
-          IN_DELETE_SELF,IN_MOVE_SELF \
+$FULLPATH IN_NO_LOOP,IN_CREATE,IN_MODIFY,IN_MOVED_TO,IN_DELETE,IN_MOVED_FROM,IN_DELETE_SELF,IN_MOVE_SELF \
       ff_synch_up \$@/\$# \$% \
       >> $ICFILE
       echo \
-`ff_get_remote_dir $FULLPATH` IN_NO_LOOP,IN_CREATE,IN_MODIFY,IN_MOVED_TO \
-          IN_DELETE,IN_MOVED_FROM \
-          IN_DELETE_SELF,IN_MOVE_SELF \
+`ff_get_remote_dir $FULLPATH` IN_NO_LOOP,IN_CREATE,IN_MODIFY,IN_MOVED_TO,IN_DELETE,IN_MOVED_FROM,IN_DELETE_SELF,IN_MOVE_SELF \
       ff_synch_dn \$@/\$# \$% \
       >> $ICFILE_REMOTE
     fi
