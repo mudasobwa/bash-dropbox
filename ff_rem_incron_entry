@@ -7,6 +7,14 @@
 
 # @param $1 — the file or directory to remove incron watch from
 
+# load default configuration
+source /etc/forkforge.conf
+source /usr/bin/ff_functions
+# load user-specific config
+if [ -f $HOME_DIR/.forkforgerc ] ; then
+  source $HOME_DIR/.forkforgerc
+fi
+
 if [ x$1 == x ]; then
   exit 104 # bad input
 fi
@@ -19,11 +27,13 @@ fi
 
 for LOCREM in $CURR $(ff_get_remote_dir $CURR) ; do
   ICFILE=$INCRON_DIR/$FF_NAME
+  ff_log "ICFILE: $ICFILE"
   if [ $LOCREM == $CURR ] ; then
    ICFILE=$ICFILE⇑
   else
    ICFILE=$ICFILE⇓
   fi
+  ff_log "ICFILE: $ICFILE"
   
   # create an array of incron file entries
   declare -a ICFILE_CONTENT
